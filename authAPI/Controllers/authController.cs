@@ -17,17 +17,39 @@ namespace authAPI.Controllers
             new Auth{Username = "daviti", Password= "123456"},
         };
 
+
         [HttpPost]
         public async Task<ActionResult<bool>> Post([FromBody]Auth authRequest)
         {
             var auth = auths.Find((i) => i.Username == authRequest.Username);
 
-            if(auth.Password != authRequest.Password)
+            if(auth == null || auth.Password != authRequest.Password)
             {
-                return BadRequest(false);
+                return Ok(false);
+            }
+            else
+            {
+                return Ok(true);
             }
 
-            return Ok(true);
+        }
+        [HttpPost("register")]
+        public async Task<ActionResult<bool>> Register([FromBody] Auth authRequest)
+        {
+            var acc = auths.Find(i => i.Username == authRequest.Username);
+
+            if(acc != null)
+            {
+                return Ok(false);
+
+            } else
+            {
+                auths.Add(authRequest);
+                auths.TrimExcess();
+                return Ok(true);
+            }
+
+
         }
     }
 }
