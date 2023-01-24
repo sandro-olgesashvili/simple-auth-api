@@ -11,8 +11,8 @@ using authAPI.Data;
 namespace authAPI.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230115122237_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20230122113639_UserCreate")]
+    partial class UserCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,9 +33,11 @@ namespace authAPI.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Password")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Username")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
