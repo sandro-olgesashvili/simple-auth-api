@@ -1,4 +1,7 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace authAPI
 {
 	public class Product
@@ -11,9 +14,7 @@ namespace authAPI
 
 		public double Price { get; set; }
 
-		public Auth Auth { get; set; }
-
-		public int AuthId { get; set; }
+		public List<Order> Orders { get; set; }
 	}
 
 }

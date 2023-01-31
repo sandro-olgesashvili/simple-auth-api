@@ -11,8 +11,8 @@ using authAPI.Data;
 namespace authAPI.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230122113829_ProductCreate")]
-    partial class ProductCreate
+    [Migration("20230129132853_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -36,6 +36,10 @@ namespace authAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Username")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -45,7 +49,7 @@ namespace authAPI.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("authAPI.Product", b =>
+            modelBuilder.Entity("authAPI.Order", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -59,6 +63,9 @@ namespace authAPI.Migrations
                     b.Property<double>("Price")
                         .HasColumnType("float");
 
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
                     b.Property<string>("ProductName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -70,23 +77,61 @@ namespace authAPI.Migrations
 
                     b.HasIndex("AuthId");
 
-                    b.ToTable("Products");
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("authAPI.Product", b =>
                 {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<double>("Price")
+                        .HasColumnType("float");
+
+                    b.Property<string>("ProductName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("authAPI.Order", b =>
+                {
                     b.HasOne("authAPI.Auth", "Auth")
-                        .WithMany("Products")
+                        .WithMany("Orders")
                         .HasForeignKey("AuthId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("authAPI.Product", "Product")
+                        .WithMany("Orders")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Auth");
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("authAPI.Auth", b =>
                 {
-                    b.Navigation("Products");
+                    b.Navigation("Orders");
+                });
+
+            modelBuilder.Entity("authAPI.Product", b =>
+                {
+                    b.Navigation("Orders");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,8 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using authAPI.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -12,14 +18,18 @@ namespace authAPI.Controllers
     public class authController : Controller
     {
         private readonly DataContext _context;
+        private readonly IConfiguration _configuration;
+        private readonly IUserService _userService;
 
-        public authController(DataContext context)
+        public authController(DataContext context, IConfiguration configuration, IUserService userService)
         {
             _context = context;
+            _configuration = configuration;
+            _userService = userService;
         }
 
         [HttpPost]
-        public async Task<ActionResult<AuthDto>> Post([FromBody] Auth req)
+        public async Task<ActionResult<TokenRoleDto>> Post([FromBody] AuthDto req)
         {
             var user = _context.Users.Where(x => x.Username == req.Username).FirstOrDefault();
 
@@ -28,14 +38,13 @@ namespace authAPI.Controllers
                 return Ok(false);
             }
 
-            AuthDto authDto = new AuthDto
+            TokenRoleDto token = new TokenRoleDto()
             {
-                Id = user.Id,
-                Username = user.Username
+                Token = CreateToken(user),
+                Role = user.Role,
             };
 
-            return Ok(authDto);
-            
+            return Ok(token);
             
         }
 
@@ -70,61 +79,214 @@ namespace authAPI.Controllers
             }
                     
         }
-        [HttpPost("product")]
-        public async Task<ActionResult<Product>> AddProduct([FromBody] Product product)
+
+
+
+        [HttpPost("product"), Authorize(Roles = "admin")]
+        public async Task<ActionResult<List<Product>>> AddProduct([FromBody] ProductDto req)
         {
-            var user = await _context.Users.FindAsync(product.AuthId);
+            var checkProduct = _context.Products.Where(x => x.ProductName == req.ProductName).FirstOrDefault();
 
-            var newProd = new Product()
-            {
-                ProductName = product.ProductName,
-                Quantity = product.Quantity,
-                Price = product.Price,
-                Auth = user,
-                AuthId = product.AuthId,
-            };
-
-            _context.Products.Add(newProd);
-
-            await _context.SaveChangesAsync();
-
-            return Ok(newProd);
-
-        }
-
-        [HttpGet("products")]
-        public async Task<ActionResult<List<Product>>> GetProduct([FromQuery] AuthDto req)
-        {
-            var product = await _context.Products.Where(x => x.AuthId == req.Id).ToListAsync();
-
-            return Ok(product);
-        }
-        [HttpDelete("products")]
-        public async Task<ActionResult<bool>> DeleteProduct([FromQuery] UserProductDto req)
-        {
-            var user = await _context.Users.FindAsync(req.UserId);
-
-
-            if(user == null)
+            if(checkProduct != null)
             {
                 return Ok(false);
             }
 
-            var product = _context.Products.Where(x => x.Id == req.ProductId).FirstOrDefault();
+
+            if(req.ProductName.Trim().Length < 1 || req.Quantity < 1 || req.Price < 1)
+            {
+                return Ok(false);
+            }
+
+            var newProduct = new Product()
+            {
+                ProductName = req.ProductName,
+                Quantity = req.Quantity,
+                Price = req.Price
+            };
+
+            _context.Products.Add(newProduct);
+
+            await _context.SaveChangesAsync();
+
+            var product = _context.Products.Where(x => x.ProductName == req.ProductName).FirstOrDefault();
+
+
+            return Ok(product);
+        }
+
+
+
+        [HttpGet("products"), Authorize]
+        public async Task<ActionResult<List<Product>>> GetProduct()
+        {
+            var products = await _context.Products.ToListAsync();
+
+            return Ok(products);
+        }
+
+
+        [HttpDelete("products"), Authorize(Roles = "admin")]
+        public async Task<ActionResult<bool>> DeleteProduct([FromQuery] ProductDto req)
+        {
+            var product = _context.Products.Where(x => x.ProductName == req.ProductName).FirstOrDefault();
 
             if(product == null)
             {
                 return Ok(false);
             }
 
-
             _context.Products.Remove(product);
 
             await _context.SaveChangesAsync();
 
+
             return Ok(true);
         }
-        
+
+
+        [HttpGet("orders"), Authorize]
+        public async Task<ActionResult<List<Order>>> GetOrder()
+        {
+            var username = _userService.GetMyName();
+
+            var user = _context.Users.Where(x => x.Username == username).FirstOrDefault();
+
+            if(user == null)
+            {
+                return Ok(false);
+            }
+
+            var orderPorduct = await _context.Orders.Where(x => x.AuthId == user.Id).ToListAsync();
+
+            return Ok(orderPorduct);
+        }
+
+
+        [HttpPost("orders"), Authorize]
+        public async Task<ActionResult<Order>> PostOrder([FromBody] OrderDto req)
+        {
+            var username = _userService.GetMyName();
+
+            var user = _context.Users.Where(x => x.Username == username).FirstOrDefault();
+
+            if(user == null)
+            {
+                return Ok(false);
+            }
+
+            var product = _context.Products.Where(x => x.ProductName == req.ProductName).FirstOrDefault();
+
+            if(product == null)
+            {
+                return Ok(false);
+            }
+
+            var newOrder = new Order()
+            {
+                ProductName = product.ProductName,
+
+                Quantity = 1,
+
+                Price = product.Price,
+
+                AuthId = user.Id,
+
+                ProductId = product.Id
+
+            };
+
+            product.Quantity = product.Quantity - 1;
+
+            _context.Orders.Add(newOrder);
+
+            await _context.SaveChangesAsync();
+
+            var sendOrder = _context.Orders.Where(x => x.ProductName == req.ProductName).FirstOrDefault();
+
+            return Ok(sendOrder);
+        }
+
+
+        [HttpDelete("orders"), Authorize]
+        public async Task<ActionResult<bool>> DeleteOrder([FromQuery] OrderDto req)
+        {
+            var username = _userService.GetMyName();
+
+            var user = _context.Users.Where(x => x.Username == username).FirstOrDefault();
+
+            if(user == null)
+            {
+                return Ok(false);
+            }
+
+            var checkOrder = _context.Orders.Where(x => x.ProductName == req.ProductName && x.AuthId == user.Id).FirstOrDefault();
+            var product = _context.Products.Where(x => x.ProductName == req.ProductName).FirstOrDefault();
+
+            product.Quantity = product.Quantity + checkOrder.Quantity;
+
+            if(checkOrder == null)
+            {
+                return Ok(false);
+            }
+
+            _context.Orders.Remove(checkOrder);
+
+            await _context.SaveChangesAsync();
+
+            return Ok(true);
+
+        }
+
+        [HttpPatch("save"), Authorize]
+        public async Task<ActionResult<bool>> SaveChange([FromBody] List<Order> req)
+        {
+
+            foreach (var item in req)
+            {
+                var user = _context.Users.Where(x => x.Id == item.AuthId).FirstOrDefault();
+                var product = _context.Products.Where(x => x.Id == item.ProductId).FirstOrDefault();
+                var order = _context.Orders.Where(x => x.Id == item.Id).FirstOrDefault();
+
+                var num = product.Quantity + order.Quantity;
+
+                product.Quantity = num - item.Quantity;
+
+                order.Quantity = item.Quantity;
+
+
+                await _context.SaveChangesAsync();
+            }
+         
+
+            return Ok(true);
+        }
+
+
+        private string CreateToken(Auth user)
+        {
+            List<Claim> claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim(ClaimTypes.Role, user.Role),
+
+            };
+
+            var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(
+                _configuration.GetSection("AppSettings:Token").Value));
+
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+
+            var token = new JwtSecurityToken(
+                claims: claims,
+                expires: DateTime.Now.AddDays(1),
+                signingCredentials: creds);
+
+            var jwt = new JwtSecurityTokenHandler().WriteToken(token);
+
+            return jwt;
+        }
+
     }
 }
 
