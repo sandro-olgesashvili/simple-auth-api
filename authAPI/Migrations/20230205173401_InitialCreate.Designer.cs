@@ -11,7 +11,7 @@ using authAPI.Data;
 namespace authAPI.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230129132853_InitialCreate")]
+    [Migration("20230205173401_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -90,6 +90,9 @@ namespace authAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("AuthId")
+                        .HasColumnType("int");
+
                     b.Property<double>("Price")
                         .HasColumnType("float");
 
@@ -102,6 +105,8 @@ namespace authAPI.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AuthId");
+
                     b.ToTable("Products");
                 });
 
@@ -110,7 +115,7 @@ namespace authAPI.Migrations
                     b.HasOne("authAPI.Auth", "Auth")
                         .WithMany("Orders")
                         .HasForeignKey("AuthId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("authAPI.Product", "Product")
@@ -124,9 +129,22 @@ namespace authAPI.Migrations
                     b.Navigation("Product");
                 });
 
+            modelBuilder.Entity("authAPI.Product", b =>
+                {
+                    b.HasOne("authAPI.Auth", "Auth")
+                        .WithMany("Products")
+                        .HasForeignKey("AuthId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Auth");
+                });
+
             modelBuilder.Entity("authAPI.Auth", b =>
                 {
                     b.Navigation("Orders");
+
+                    b.Navigation("Products");
                 });
 
             modelBuilder.Entity("authAPI.Product", b =>

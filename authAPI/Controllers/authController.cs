@@ -42,6 +42,7 @@ namespace authAPI.Controllers
             {
                 Token = CreateToken(user),
                 Role = user.Role,
+                Id = user.Id,
             };
 
             return Ok(token);
@@ -82,10 +83,19 @@ namespace authAPI.Controllers
 
 
 
-        [HttpPost("product"), Authorize(Roles = "admin")]
+        [HttpPost("product"), Authorize(Roles = "admin, seller")]
         public async Task<ActionResult<List<Product>>> AddProduct([FromBody] ProductDto req)
         {
             var checkProduct = _context.Products.Where(x => x.ProductName == req.ProductName).FirstOrDefault();
+
+            var username = _userService.GetMyName();
+
+            var user = _context.Users.Where(x => x.Username == username).FirstOrDefault();
+
+            if(user == null)
+            {
+                return Ok(false);
+            }
 
             if(checkProduct != null)
             {
@@ -102,7 +112,8 @@ namespace authAPI.Controllers
             {
                 ProductName = req.ProductName,
                 Quantity = req.Quantity,
-                Price = req.Price
+                Price = req.Price,
+                AuthId = user.Id,
             };
 
             _context.Products.Add(newProduct);
@@ -126,22 +137,45 @@ namespace authAPI.Controllers
         }
 
 
-        [HttpDelete("products"), Authorize(Roles = "admin")]
+        [HttpDelete("products"), Authorize(Roles = "admin, seller")]
         public async Task<ActionResult<bool>> DeleteProduct([FromQuery] ProductDto req)
         {
-            var product = _context.Products.Where(x => x.ProductName == req.ProductName).FirstOrDefault();
 
-            if(product == null)
+            var username = _userService.GetMyName();
+
+            if(username == "admin")
             {
-                return Ok(false);
+                var product = _context.Products.Where(x => x.ProductName == req.ProductName).FirstOrDefault();
+
+                if(product == null)
+                {
+                    return Ok(false);
+                }
+
+                _context.Products.Remove(product);
+
+                await _context.SaveChangesAsync();
+
+
+                return Ok(true);
+            } else
+            {
+                var user = _context.Users.Where(x => x.Username == username).FirstOrDefault();
+
+                var product = _context.Products.Where(x => x.ProductName == req.ProductName && x.AuthId == user.Id).FirstOrDefault();
+
+                if (user == null) return Ok(false);
+
+                if (product == null) return Ok(false);
+
+                _context.Products.Remove(product);
+
+                await _context.SaveChangesAsync();
+
+                return Ok(true);
             }
 
-            _context.Products.Remove(product);
 
-            await _context.SaveChangesAsync();
-
-
-            return Ok(true);
         }
 
 
@@ -260,6 +294,60 @@ namespace authAPI.Controllers
          
 
             return Ok(true);
+        }
+
+
+        [HttpPatch("update"), Authorize(Roles ="admin, seller")]
+        public async Task<ActionResult<bool>> ProductUpdate([FromBody] Product req)
+        {
+            var username = _userService.GetMyName();
+
+            if (req.Quantity <= 0 || req.Price <= 0) return Ok(false);
+
+            if(username == "admin")
+            {
+                var product = _context.Products.Where(x => x.Id == req.Id).FirstOrDefault();
+
+                if (product == null) return Ok(false);
+
+                product.ProductName = req.ProductName;
+
+                product.Quantity = req.Quantity;
+
+                product.Price = req.Price;
+
+                await _context.SaveChangesAsync();
+
+                return Ok(true);
+
+            } else
+            {
+                var user = _context.Users.Where(x => x.Username == username).FirstOrDefault();
+
+                if (user == null) return Ok(false);
+
+                var product = _context.Products.Where(x => x.Id == req.Id && x.AuthId == user.Id).FirstOrDefault();
+
+                if (product == null) return Ok(false);
+
+                //var check = _context.Products.Where(x => x.ProductName == req.ProductName).FirstOrDefault();
+
+                //if(check == null)
+                //{
+                //    return Ok(3);
+                //}
+
+                product.ProductName = req.ProductName;
+
+                product.Quantity = req.Quantity;
+
+                product.Price = req.Price;
+
+                await _context.SaveChangesAsync();
+
+                return Ok(product);
+
+            }
         }
 
 

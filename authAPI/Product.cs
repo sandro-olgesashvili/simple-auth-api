@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace authAPI
 {
@@ -14,6 +15,12 @@ namespace authAPI
 
 		public double Price { get; set; }
 
+        [JsonIgnore]
+        public Auth Auth { get; set; }
+
+		public int AuthId { get; set; }
+
+		[JsonIgnore]
 		public List<Order> Orders { get; set; }
 	}
 

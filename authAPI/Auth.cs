@@ -13,7 +13,9 @@ namespace authAPI
 
 		public string Role { get; set; } = "user";
 
-		[JsonIgnore]
+		//[JsonIgnore]
+		public List<Product> Products { get; set; }
+
 		public List<Order> Orders { get; set; }
 	}
 }

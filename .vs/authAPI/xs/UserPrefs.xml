@@ -4,25 +4,26 @@
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MultiItemStartupConfigurations />
-  <MonoDevelop.Ide.ItemProperties.authAPI PreferredExecutionTarget="/Applications/Google Chrome.app" />
   <MonoDevelop.Ide.Workbench ActiveDocument="authAPI/Controllers/authController.cs">
     <Files>
-      <File FileName="authAPI/Controllers/authController.cs" Line="271" Column="48" />
-      <File FileName="authAPI/Auth.cs" Line="1" Column="1" />
-      <File FileName="authAPI/OrderDto.cs" Line="1" Column="1" />
+      <File FileName="authAPI/Controllers/authController.cs" Line="334" Column="1" />
+      <File FileName="authAPI/Product.cs" Line="4" Column="1" />
+      <File FileName="authAPI/Order.cs" Line="20" Column="21" />
+      <File FileName="authAPI/Auth.cs" Line="16" Column="17" />
+      <File FileName="authAPI/ProductDto.cs" Line="10" Column="40" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
           <Node name="authAPI" expanded="True">
             <Node name="authAPI" expanded="True">
-              <Node name="Controllers" expanded="True" />
-              <Node name="Order.cs" selected="True" />
+              <Node name="ProductDto.cs" selected="True" />
             </Node>
           </Node>
         </State>
       </Pad>
     </Pads>
   </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.ItemProperties.authAPI PreferredExecutionTarget="/Applications/Google Chrome.app" />
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
 </Properties>
