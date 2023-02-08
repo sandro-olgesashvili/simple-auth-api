@@ -46,17 +46,17 @@ namespace authAPI.Controllers
             };
 
             return Ok(token);
-            
+
         }
 
         [HttpPost("register")]
         public async Task<ActionResult<bool>> Register([FromBody] Auth req)
         {
             var user = _context.Users.Where(x => x.Username == req.Username).FirstOrDefault();
-            if(user != null)
+            if (user != null)
             {
                 return Ok(false);
-            }else
+            } else
             {
                 _context.Users.Add(req);
                 await _context.SaveChangesAsync();
@@ -68,7 +68,7 @@ namespace authAPI.Controllers
         {
             var user = _context.Users.Where(x => x.Username == req.Username).FirstOrDefault();
 
-            if(user == null || user.Username != req.Username)
+            if (user == null || user.Username != req.Username)
             {
                 return Ok(false);
             } else
@@ -78,7 +78,7 @@ namespace authAPI.Controllers
 
                 return Ok(true);
             }
-                    
+
         }
 
 
@@ -92,18 +92,18 @@ namespace authAPI.Controllers
 
             var user = _context.Users.Where(x => x.Username == username).FirstOrDefault();
 
-            if(user == null)
+            if (user == null)
             {
                 return Ok(false);
             }
 
-            if(checkProduct != null)
+            if (checkProduct != null)
             {
                 return Ok(false);
             }
 
 
-            if(req.ProductName.Trim().Length < 1 || req.Quantity < 1 || req.Price < 1)
+            if (req.ProductName.Trim().Length < 1 || req.Quantity < 1 || req.Price < 1)
             {
                 return Ok(false);
             }
@@ -143,11 +143,11 @@ namespace authAPI.Controllers
 
             var username = _userService.GetMyName();
 
-            if(username == "admin")
+            if (username == "admin")
             {
                 var product = _context.Products.Where(x => x.ProductName == req.ProductName).FirstOrDefault();
 
-                if(product == null)
+                if (product == null)
                 {
                     return Ok(false);
                 }
@@ -186,7 +186,7 @@ namespace authAPI.Controllers
 
             var user = _context.Users.Where(x => x.Username == username).FirstOrDefault();
 
-            if(user == null)
+            if (user == null)
             {
                 return Ok(false);
             }
@@ -204,14 +204,14 @@ namespace authAPI.Controllers
 
             var user = _context.Users.Where(x => x.Username == username).FirstOrDefault();
 
-            if(user == null)
+            if (user == null)
             {
                 return Ok(false);
             }
 
             var product = _context.Products.Where(x => x.ProductName == req.ProductName).FirstOrDefault();
 
-            if(product == null)
+            if (product == null)
             {
                 return Ok(false);
             }
@@ -249,7 +249,7 @@ namespace authAPI.Controllers
 
             var user = _context.Users.Where(x => x.Username == username).FirstOrDefault();
 
-            if(user == null)
+            if (user == null)
             {
                 return Ok(false);
             }
@@ -259,7 +259,7 @@ namespace authAPI.Controllers
 
             product.Quantity = product.Quantity + checkOrder.Quantity;
 
-            if(checkOrder == null)
+            if (checkOrder == null)
             {
                 return Ok(false);
             }
@@ -291,20 +291,20 @@ namespace authAPI.Controllers
 
                 await _context.SaveChangesAsync();
             }
-         
+
 
             return Ok(true);
         }
 
 
-        [HttpPatch("update"), Authorize(Roles ="admin, seller")]
+        [HttpPatch("update"), Authorize(Roles = "admin, seller")]
         public async Task<ActionResult<bool>> ProductUpdate([FromBody] Product req)
         {
             var username = _userService.GetMyName();
 
             if (req.Quantity <= 0 || req.Price <= 0) return Ok(false);
 
-            if(username == "admin")
+            if (username == "admin")
             {
                 var product = _context.Products.Where(x => x.Id == req.Id).FirstOrDefault();
 
@@ -330,13 +330,6 @@ namespace authAPI.Controllers
 
                 if (product == null) return Ok(false);
 
-                //var check = _context.Products.Where(x => x.ProductName == req.ProductName).FirstOrDefault();
-
-                //if(check == null)
-                //{
-                //    return Ok(3);
-                //}
-
                 product.ProductName = req.ProductName;
 
                 product.Quantity = req.Quantity;
@@ -348,6 +341,18 @@ namespace authAPI.Controllers
                 return Ok(product);
 
             }
+        }
+
+        [HttpGet("users"), Authorize(Roles = "admin")]
+        public async Task<ActionResult<List<string>>> GetUsers()
+        {
+            var username = _userService.GetMyName();
+
+
+            var users = await _context.Users.Select(x => new UserDto() {Name = x.Username }).ToListAsync();
+            
+
+            return Ok(users);
         }
 
 
