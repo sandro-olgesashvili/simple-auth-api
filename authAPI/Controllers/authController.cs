@@ -344,12 +344,12 @@ namespace authAPI.Controllers
         }
 
         [HttpGet("users"), Authorize(Roles = "admin")]
-        public async Task<ActionResult<List<string>>> GetUsers()
+        public async Task<ActionResult<List<UserDto>>> GetUsers()
         {
             var username = _userService.GetMyName();
 
 
-            var users = await _context.Users.Select(x => new UserDto() {Name = x.Username }).ToListAsync();
+            var users = await _context.Users.Select(x => new UserDto() {Name = x.Username, Code = x.Id }).ToListAsync();
             
 
             return Ok(users);
