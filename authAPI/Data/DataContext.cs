@@ -13,6 +13,8 @@ namespace authAPI.Data
 
 		public DbSet<Order> Orders { get; set; }
 
+        public DbSet<Voucher> Vouchers { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Auth>()
@@ -35,6 +37,11 @@ namespace authAPI.Data
                 .HasOne(o => o.Product)
                 .WithMany(p => p.Orders)
                 .HasForeignKey(o => o.ProductId);
+
+            modelBuilder.Entity<Voucher>()
+                .HasOne(o => o.Auth)
+                .WithMany(u => u.Vouchers)
+                .HasForeignKey(o => o.AuthId);
         }
     }
 }

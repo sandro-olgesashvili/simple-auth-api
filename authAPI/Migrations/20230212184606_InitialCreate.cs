@@ -48,6 +48,28 @@ namespace authAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Vouchers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    VoucherCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Price = table.Column<double>(type: "float", nullable: false),
+                    Used = table.Column<bool>(type: "bit", nullable: false),
+                    AuthId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Vouchers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Vouchers_Users_AuthId",
+                        column: x => x.AuthId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Orders",
                 columns: table => new
                 {
@@ -90,6 +112,11 @@ namespace authAPI.Migrations
                 name: "IX_Products_AuthId",
                 table: "Products",
                 column: "AuthId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Vouchers_AuthId",
+                table: "Vouchers",
+                column: "AuthId");
         }
 
         /// <inheritdoc />
@@ -97,6 +124,9 @@ namespace authAPI.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Orders");
+
+            migrationBuilder.DropTable(
+                name: "Vouchers");
 
             migrationBuilder.DropTable(
                 name: "Products");

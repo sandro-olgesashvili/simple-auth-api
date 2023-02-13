@@ -11,7 +11,7 @@ using authAPI.Data;
 namespace authAPI.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230205173401_InitialCreate")]
+    [Migration("20230212184606_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -110,6 +110,34 @@ namespace authAPI.Migrations
                     b.ToTable("Products");
                 });
 
+            modelBuilder.Entity("authAPI.Voucher", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AuthId")
+                        .HasColumnType("int");
+
+                    b.Property<double>("Price")
+                        .HasColumnType("float");
+
+                    b.Property<bool>("Used")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("VoucherCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuthId");
+
+                    b.ToTable("Vouchers");
+                });
+
             modelBuilder.Entity("authAPI.Order", b =>
                 {
                     b.HasOne("authAPI.Auth", "Auth")
@@ -140,11 +168,24 @@ namespace authAPI.Migrations
                     b.Navigation("Auth");
                 });
 
+            modelBuilder.Entity("authAPI.Voucher", b =>
+                {
+                    b.HasOne("authAPI.Auth", "Auth")
+                        .WithMany("Vouchers")
+                        .HasForeignKey("AuthId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Auth");
+                });
+
             modelBuilder.Entity("authAPI.Auth", b =>
                 {
                     b.Navigation("Orders");
 
                     b.Navigation("Products");
+
+                    b.Navigation("Vouchers");
                 });
 
             modelBuilder.Entity("authAPI.Product", b =>
