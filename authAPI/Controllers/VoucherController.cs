@@ -15,12 +15,14 @@ namespace authAPI.Controllers
     {
         private readonly DataContext _context;
         private readonly IUserService _userService;
+        private readonly IVoucherService _voucherService;
 
 
-        public VoucherController(DataContext context, IUserService userService)
+        public VoucherController(DataContext context, IUserService userService, IVoucherService voucherService)
         {
             _context = context;
             _userService = userService;
+            _voucherService = voucherService;
         }
 
 
@@ -43,7 +45,7 @@ namespace authAPI.Controllers
 
             if (req.Price < 1) return Ok(false);
 
-            var voucher = VoucherService.GenerateVoucher();
+            var voucher = _voucherService.Get();
 
             var voucherCreate = new Voucher()
             {

@@ -1,9 +1,10 @@
 ﻿using System;
 namespace authAPI.Service
 {
-	public static class VoucherService
+	public class VoucherService: IVoucherService
     {
-        public static string GenerateVoucher()
+        
+        public string Get()
         {
             const string characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
             const int length = 16;
