@@ -48,6 +48,28 @@ namespace authAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "SoldProducts",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    Price = table.Column<double>(type: "float", nullable: false),
+                    ProductName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AuthId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SoldProducts", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SoldProducts_Users_AuthId",
+                        column: x => x.AuthId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Vouchers",
                 columns: table => new
                 {
@@ -114,6 +136,11 @@ namespace authAPI.Migrations
                 column: "AuthId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_SoldProducts_AuthId",
+                table: "SoldProducts",
+                column: "AuthId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Vouchers_AuthId",
                 table: "Vouchers",
                 column: "AuthId");
@@ -124,6 +151,9 @@ namespace authAPI.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Orders");
+
+            migrationBuilder.DropTable(
+                name: "SoldProducts");
 
             migrationBuilder.DropTable(
                 name: "Vouchers");

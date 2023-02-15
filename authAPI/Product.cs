@@ -22,6 +22,7 @@ namespace authAPI
 
 		[JsonIgnore]
 		public List<Order> Orders { get; set; }
+
 	}
 
 }

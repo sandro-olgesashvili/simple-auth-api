@@ -19,6 +19,9 @@ namespace authAPI
 		public List<Order> Orders { get; set; }
 
 		public List<Voucher> Vouchers { get; set; }
+
+		public List<SoldProduct> SoldProducts { get; set; }
+
 	}
 }
 

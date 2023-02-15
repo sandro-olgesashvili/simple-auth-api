@@ -73,6 +73,8 @@
 /Users/sandroolgesashvili/Desktop/simple-auth-api/authAPI/bin/Debug/net6.0/Azure.Identity.dll
 /Users/sandroolgesashvili/Desktop/simple-auth-api/authAPI/bin/Debug/net6.0/Humanizer.dll
 /Users/sandroolgesashvili/Desktop/simple-auth-api/authAPI/bin/Debug/net6.0/Microsoft.AspNetCore.Authentication.JwtBearer.dll
+/Users/sandroolgesashvili/Desktop/simple-auth-api/authAPI/bin/Debug/net6.0/Microsoft.AspNetCore.JsonPatch.dll
+/Users/sandroolgesashvili/Desktop/simple-auth-api/authAPI/bin/Debug/net6.0/Microsoft.AspNetCore.Mvc.NewtonsoftJson.dll
 /Users/sandroolgesashvili/Desktop/simple-auth-api/authAPI/bin/Debug/net6.0/Microsoft.Bcl.AsyncInterfaces.dll
 /Users/sandroolgesashvili/Desktop/simple-auth-api/authAPI/bin/Debug/net6.0/Microsoft.Data.SqlClient.dll
 /Users/sandroolgesashvili/Desktop/simple-auth-api/authAPI/bin/Debug/net6.0/Microsoft.EntityFrameworkCore.dll
@@ -102,6 +104,8 @@
 /Users/sandroolgesashvili/Desktop/simple-auth-api/authAPI/bin/Debug/net6.0/Microsoft.SqlServer.Server.dll
 /Users/sandroolgesashvili/Desktop/simple-auth-api/authAPI/bin/Debug/net6.0/Microsoft.Win32.SystemEvents.dll
 /Users/sandroolgesashvili/Desktop/simple-auth-api/authAPI/bin/Debug/net6.0/Mono.TextTemplating.dll
+/Users/sandroolgesashvili/Desktop/simple-auth-api/authAPI/bin/Debug/net6.0/Newtonsoft.Json.dll
+/Users/sandroolgesashvili/Desktop/simple-auth-api/authAPI/bin/Debug/net6.0/Newtonsoft.Json.Bson.dll
 /Users/sandroolgesashvili/Desktop/simple-auth-api/authAPI/bin/Debug/net6.0/Scrutor.dll
 /Users/sandroolgesashvili/Desktop/simple-auth-api/authAPI/bin/Debug/net6.0/Swashbuckle.AspNetCore.Filters.dll
 /Users/sandroolgesashvili/Desktop/simple-auth-api/authAPI/bin/Debug/net6.0/Swashbuckle.AspNetCore.Filters.Abstractions.dll

@@ -11,7 +11,7 @@ using authAPI.Data;
 namespace authAPI.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230212184606_InitialCreate")]
+    [Migration("20230214160528_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -110,6 +110,34 @@ namespace authAPI.Migrations
                     b.ToTable("Products");
                 });
 
+            modelBuilder.Entity("authAPI.SoldProduct", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AuthId")
+                        .HasColumnType("int");
+
+                    b.Property<double>("Price")
+                        .HasColumnType("float");
+
+                    b.Property<string>("ProductName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuthId");
+
+                    b.ToTable("SoldProducts");
+                });
+
             modelBuilder.Entity("authAPI.Voucher", b =>
                 {
                     b.Property<int>("Id")
@@ -168,6 +196,17 @@ namespace authAPI.Migrations
                     b.Navigation("Auth");
                 });
 
+            modelBuilder.Entity("authAPI.SoldProduct", b =>
+                {
+                    b.HasOne("authAPI.Auth", "Auth")
+                        .WithMany("SoldProducts")
+                        .HasForeignKey("AuthId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Auth");
+                });
+
             modelBuilder.Entity("authAPI.Voucher", b =>
                 {
                     b.HasOne("authAPI.Auth", "Auth")
@@ -184,6 +223,8 @@ namespace authAPI.Migrations
                     b.Navigation("Orders");
 
                     b.Navigation("Products");
+
+                    b.Navigation("SoldProducts");
 
                     b.Navigation("Vouchers");
                 });
