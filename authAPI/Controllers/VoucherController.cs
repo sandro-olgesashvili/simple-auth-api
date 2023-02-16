@@ -84,9 +84,11 @@ namespace authAPI.Controllers
 
             if (voucher == null || voucher.Used == true) return Ok(false);
 
-            voucher.Used = true;
-
             order.Price = order.Price - voucher.Price;
+
+            if (order.Price <= 0) return Ok(false);
+
+            voucher.Used = true;
 
             await _context.SaveChangesAsync();
 
