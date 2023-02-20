@@ -55,7 +55,9 @@ namespace authAPI.Controllers
 
                 Auth = user,
 
-                AuthId = user.Id
+                AuthId = user.Id,
+
+                ExpireDate = req.ExpireDate
             };
 
             _context.Vouchers.Add(voucherCreate);
@@ -72,6 +74,8 @@ namespace authAPI.Controllers
         {
             var username = _userService.GetMyName();
 
+            var currentDate = DateTime.Now;
+
             var user = _context.Users.Where(x => x.Username == username).FirstOrDefault();
 
             if (user == null) return Ok(false);
@@ -82,13 +86,21 @@ namespace authAPI.Controllers
 
             var voucher = _context.Vouchers.Where(x => x.VoucherCode == req.VoucherCode).FirstOrDefault();
 
-            if (voucher == null || voucher.Used == true) return Ok(false);
+            if (voucher == null || voucher.Used == 3 || voucher.Used == 2) return Ok(false);
+
+            int result = DateTime.Compare(voucher.ExpireDate, currentDate);
+
+            if (result < 0) return Ok(false);
 
             order.Price = order.Price - voucher.Price;
 
             if (order.Price <= 0) return Ok(false);
 
-            voucher.Used = true;
+            voucher.UsedBy = user.Username;
+
+            voucher.Used = 2;
+
+            voucher.OrderId = req.OrderId;
 
             await _context.SaveChangesAsync();
 

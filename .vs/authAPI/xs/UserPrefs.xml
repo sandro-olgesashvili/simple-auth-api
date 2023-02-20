@@ -1,15 +1,8 @@
 ﻿<Properties StartupConfiguration="{41BD6EB7-8872-4489-A2EB-6FE9A6A43759}|Default">
-  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore />
-  </MonoDevelop.Ide.DebuggingService.Breakpoints>
-  <MonoDevelop.Ide.ItemProperties.authAPI PreferredExecutionTarget="/Applications/Google Chrome.app" />
-  <MultiItemStartupConfigurations />
-  <MonoDevelop.Ide.Workbench ActiveDocument="authAPI/Controllers/SoldProductController.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="authAPI/Controllers/ReportsController.cs">
     <Files>
-      <File FileName="authAPI/Controllers/SoldProductController.cs" Line="103" Column="47" />
-      <File FileName="authAPI/Controllers/VoucherController.cs" Line="91" Column="33" />
+      <File FileName="authAPI/Controllers/VoucherController.cs" />
+      <File FileName="authAPI/Controllers/ReportsController.cs" Line="40" Column="62" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
@@ -17,11 +10,17 @@
           <Node name="authAPI" expanded="True">
             <Node name="authAPI" expanded="True">
               <Node name="Controllers" expanded="True" />
-              <Node name="SoldProduct.cs" selected="True" />
             </Node>
           </Node>
         </State>
       </Pad>
     </Pads>
   </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.ItemProperties.authAPI PreferredExecutionTarget="/Applications/Google Chrome.app" />
+  <MultiItemStartupConfigurations />
 </Properties>

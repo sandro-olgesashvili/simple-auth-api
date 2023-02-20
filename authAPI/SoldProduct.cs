@@ -17,6 +17,8 @@ namespace authAPI
         public Auth Auth { get; set; }
 
         public int AuthId { get; set; }
+
+        public DateTime DateTime { get; set; }
     }
 }
 

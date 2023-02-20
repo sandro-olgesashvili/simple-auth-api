@@ -256,6 +256,21 @@ namespace authAPI.Controllers
 
             var checkOrder = _context.Orders.Where(x => x.ProductName == req.ProductName && x.AuthId == user.Id).FirstOrDefault();
             var product = _context.Products.Where(x => x.ProductName == req.ProductName).FirstOrDefault();
+            var vouchers = _context.Vouchers.Where(x => x.OrderId == checkOrder.Id).ToList();
+
+
+
+            if(vouchers != null)
+            {
+                foreach (var item in vouchers)
+                {
+                    item.Used = 1;
+                    item.UsedBy = string.Empty;
+                    item.OrderId = 0;
+                }
+
+            }
+
 
             product.Quantity = product.Quantity + checkOrder.Quantity;
 

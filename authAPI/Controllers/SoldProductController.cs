@@ -43,6 +43,7 @@ namespace authAPI.Controllers
                     Price = item.Price,
                     ProductName = item.ProductName,
                     AuthName = user.Username,
+                    DateTime = item.DateTime
                 };
 
                 SoldList.Add(newSold);
@@ -66,6 +67,15 @@ namespace authAPI.Controllers
 
             if (orders.Count <= 0) return Ok(false);
 
+            var vouchers = _context.Vouchers.Where(x => x.UsedBy == username).ToList();
+
+            if (vouchers == null) return Ok(false);
+
+            foreach (var item in vouchers)
+            {
+                item.Used = 3;
+            }
+
 
             foreach (var item in orders)
             {
@@ -74,8 +84,9 @@ namespace authAPI.Controllers
                     Price = item.Price,
                     Quantity = item.Quantity,
                     ProductName = item.ProductName,
-                    AuthId = user.Id
-                };
+                    AuthId = user.Id,
+                    DateTime = DateTime.Now
+            };
 
                 _context.SoldProducts.Add(sold);
 
@@ -106,7 +117,55 @@ namespace authAPI.Controllers
         }
 
 
-        
+        [HttpGet("user"), Authorize]
+        public async Task<ActionResult<List<SoldUserDto>>> GetSold()
+        {
+            var username = _userService.GetMyName();
+
+            var user = _context.Users.Where(x => x.Username == username).FirstOrDefault();
+
+            if (user == null) return Ok(false);
+
+            var soldList = await _context.SoldProducts.Where(x => x.AuthId == user.Id).Select(x => new SoldUserDto{
+                Id = x.Id,
+                ProductName = x.ProductName,
+                Price = x.Price,
+                Quantity = x.Quantity,
+                DateTime = x.DateTime
+            }).ToListAsync();
+
+            return Ok(soldList);
+        }
+
+        [HttpDelete("user"), Authorize]
+        public async Task<ActionResult<bool>> DelSold([FromQuery] int id)
+        {
+            var username = _userService.GetMyName();
+
+            var user = _context.Users.Where(x => x.Username == username).FirstOrDefault();
+
+            if (user == null) return Ok(false);
+
+            var soldProduct = _context.SoldProducts.Where(x => x.Id == id && x.AuthId == user.Id).FirstOrDefault();
+
+            if (soldProduct == null) return Ok(false);
+
+            var product = _context.Products.Where(x => x.ProductName == soldProduct.ProductName).FirstOrDefault();
+
+            if (product == null) return Ok(false);
+
+            product.Quantity += soldProduct.Quantity;
+
+            _context.SoldProducts.Remove(soldProduct);
+
+            await _context.SaveChangesAsync();
+
+            return Ok(true);
+        }
+
+
+
+
     }
 }
 

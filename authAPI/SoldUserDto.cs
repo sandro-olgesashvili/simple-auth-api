@@ -1,7 +1,7 @@
 ﻿using System;
 namespace authAPI
 {
-	public class SoldProductDto
+	public class SoldUserDto
 	{
         public int Id { get; set; }
 
@@ -11,9 +11,8 @@ namespace authAPI
 
         public string ProductName { get; set; }
 
-        public string AuthName { get; set; }
-
         public DateTime DateTime { get; set; }
     }
 }
+
 
