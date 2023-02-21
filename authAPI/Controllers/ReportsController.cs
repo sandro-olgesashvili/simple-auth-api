@@ -29,9 +29,7 @@ namespace authAPI.Controllers
 
             var soldProducts = await _context.SoldProducts.ToListAsync();
 
-
             var soldProductsByProduct = soldProducts.GroupBy(sp => sp.ProductName);
-
 
             var productSales = soldProductsByProduct.Select(g => new {
                 ProductName = g.Key,
@@ -42,7 +40,6 @@ namespace authAPI.Controllers
 
             return Ok(productSales);
         }
-
     }
 }
 

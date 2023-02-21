@@ -67,7 +67,7 @@ namespace authAPI.Controllers
 
             if (orders.Count <= 0) return Ok(false);
 
-            var vouchers = _context.Vouchers.Where(x => x.UsedBy == username).ToList();
+            var vouchers = await _context.Vouchers.Where(x => x.UsedBy == username).ToListAsync();
 
             if (vouchers == null) return Ok(false);
 
