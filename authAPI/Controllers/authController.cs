@@ -323,6 +323,13 @@ namespace authAPI.Controllers
             {
                 var product = _context.Products.Where(x => x.Id == req.Id).FirstOrDefault();
 
+                var products = await _context.Products.Where(x => x.Id != req.Id).ToListAsync();
+
+                foreach (var item in products)
+                {
+                    if (item.ProductName == req.ProductName) return Ok(false);
+                }
+
                 if (product == null) return Ok(false);
 
                 product.ProductName = req.ProductName;
@@ -342,6 +349,14 @@ namespace authAPI.Controllers
                 if (user == null) return Ok(false);
 
                 var product = _context.Products.Where(x => x.Id == req.Id && x.AuthId == user.Id).FirstOrDefault();
+
+                var products = await _context.Products.Where(x => x.Id != req.Id).ToListAsync();
+
+                foreach (var item in products)
+                {
+                    if (item.ProductName == req.ProductName) return Ok(false);
+                }
+
 
                 if (product == null) return Ok(false);
 
