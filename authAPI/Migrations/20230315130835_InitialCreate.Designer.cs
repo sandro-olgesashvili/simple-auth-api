@@ -12,8 +12,8 @@ using authAPI.Data;
 namespace authAPI.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230220104439_UpdateSold")]
-    partial class UpdateSold
+    [Migration("20230315130835_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -61,6 +61,10 @@ namespace authAPI.Migrations
                     b.Property<int>("AuthId")
                         .HasColumnType("int");
 
+                    b.Property<string>("ImageSrc")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<double>("Price")
                         .HasColumnType("float");
 
@@ -93,6 +97,10 @@ namespace authAPI.Migrations
 
                     b.Property<int>("AuthId")
                         .HasColumnType("int");
+
+                    b.Property<string>("ImageName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<double>("Price")
                         .HasColumnType("float");

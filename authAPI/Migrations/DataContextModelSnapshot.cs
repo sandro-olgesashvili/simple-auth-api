@@ -58,6 +58,10 @@ namespace authAPI.Migrations
                     b.Property<int>("AuthId")
                         .HasColumnType("int");
 
+                    b.Property<string>("ImageSrc")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<double>("Price")
                         .HasColumnType("float");
 
@@ -90,6 +94,10 @@ namespace authAPI.Migrations
 
                     b.Property<int>("AuthId")
                         .HasColumnType("int");
+
+                    b.Property<string>("ImageName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<double>("Price")
                         .HasColumnType("float");

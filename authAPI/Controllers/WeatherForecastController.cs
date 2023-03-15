@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace authAPI.Controllers;
 
@@ -10,12 +12,15 @@ public class WeatherForecastController : ControllerBase
     {
         "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
     };
+    private readonly IWebHostEnvironment _env;
+
 
     private readonly ILogger<WeatherForecastController> _logger;
 
-    public WeatherForecastController(ILogger<WeatherForecastController> logger)
+    public WeatherForecastController(ILogger<WeatherForecastController> logger, IWebHostEnvironment env)
     {
         _logger = logger;
+        _env = env;
     }
 
     [HttpGet(Name = "GetWeatherForecast")]
@@ -29,5 +34,6 @@ public class WeatherForecastController : ControllerBase
         })
         .ToArray();
     }
+
 }
 

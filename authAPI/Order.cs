@@ -12,15 +12,16 @@ namespace authAPI
 
         public double Price { get; set; }
 
-        [JsonIgnore]
+        public string ImageSrc { get; set; }
+
         public Product Product { get; set; }
 
         public int ProductId { get; set; }
 
-        [JsonIgnore]
         public Auth Auth { get; set; }
 
         public int AuthId { get; set; }
+
 
     }
 }

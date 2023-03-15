@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "3fYwFkBvY00cpmsBZaAGoPWqSCBd7ZYVw+whOI7j/Xgi47FElydYB9mJL73i5bGBUxHkZgTKQ9SK2ERSQe6L3g==",
+  "dgSpecHash": "1eYGKzXU6pavfh3TvqHF7jTl1aobWTv/NalBoQJXDgKixmLaxhIia1CCusXqN7XQr1DrMZElxShXTT4an3UapA==",
   "success": true,
   "projectFilePath": "/Users/sandroolgesashvili/Desktop/simple-auth-api/authAPI/authAPI.csproj",
   "expectedPackageFiles": [
@@ -46,7 +46,7 @@
     "/Users/sandroolgesashvili/.nuget/packages/microsoft.win32.registry/5.0.0/microsoft.win32.registry.5.0.0.nupkg.sha512",
     "/Users/sandroolgesashvili/.nuget/packages/microsoft.win32.systemevents/5.0.0/microsoft.win32.systemevents.5.0.0.nupkg.sha512",
     "/Users/sandroolgesashvili/.nuget/packages/mono.texttemplating/2.2.1/mono.texttemplating.2.2.1.nupkg.sha512",
-    "/Users/sandroolgesashvili/.nuget/packages/newtonsoft.json/13.0.1/newtonsoft.json.13.0.1.nupkg.sha512",
+    "/Users/sandroolgesashvili/.nuget/packages/newtonsoft.json/13.0.3/newtonsoft.json.13.0.3.nupkg.sha512",
     "/Users/sandroolgesashvili/.nuget/packages/newtonsoft.json.bson/1.0.2/newtonsoft.json.bson.1.0.2.nupkg.sha512",
     "/Users/sandroolgesashvili/.nuget/packages/scrutor/3.3.0/scrutor.3.3.0.nupkg.sha512",
     "/Users/sandroolgesashvili/.nuget/packages/swashbuckle.aspnetcore/6.5.0/swashbuckle.aspnetcore.6.5.0.nupkg.sha512",

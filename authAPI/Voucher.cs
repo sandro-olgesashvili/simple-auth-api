@@ -17,7 +17,6 @@ namespace authAPI
 
 		public DateTime ExpireDate { get; set; }
 
-		[JsonIgnore]
 		public Auth Auth { get; set; }
 
 		public int AuthId { get; set; }

@@ -15,7 +15,16 @@ namespace authAPI
 
 		public double Price { get; set; }
 
-        [JsonIgnore]
+        [Column(TypeName = "nvarchar(100)")]
+        public string ImageName { get; set; }
+
+        [NotMapped]
+        public IFormFile ImageFile { get; set; }
+
+        [NotMapped]
+        public string ImageSrc { get; set; }
+
+		[JsonIgnore]
         public Auth Auth { get; set; }
 
 		public int AuthId { get; set; }

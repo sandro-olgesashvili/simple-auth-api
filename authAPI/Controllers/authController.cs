@@ -3,12 +3,16 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
+using System.Text.Json;
 using System.Threading.Tasks;
 using authAPI.Service;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.JsonPatch.Internal;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -20,12 +24,15 @@ namespace authAPI.Controllers
         private readonly DataContext _context;
         private readonly IConfiguration _configuration;
         private readonly IUserService _userService;
+        private readonly IWebHostEnvironment _env;
 
-        public authController(DataContext context, IConfiguration configuration, IUserService userService)
+
+        public authController(DataContext context, IConfiguration configuration, IUserService userService, IWebHostEnvironment env)
         {
             _context = context;
             _configuration = configuration;
             _userService = userService;
+            _env = env;
         }
 
         [HttpPost]
@@ -84,8 +91,14 @@ namespace authAPI.Controllers
 
 
         [HttpPost("product"), Authorize(Roles = "admin, seller")]
-        public async Task<ActionResult<List<Product>>> AddProduct([FromBody] ProductDto req)
+        public async Task<ActionResult<List<Product>>> AddProduct([FromForm] ProductDto req)
         {
+            //var json = Request.Form.Files.Count();
+            //var product = JsonConvert.DeserializeObject<Product>("123");
+            //// var a = HttpContext.Request.Form["imageFile"];
+            //// var name = HttpContext.Request.Scheme;
+            //var s = 1;
+
             var checkProduct = _context.Products.Where(x => x.ProductName == req.ProductName).FirstOrDefault();
 
             var username = _userService.GetMyName();
@@ -108,12 +121,18 @@ namespace authAPI.Controllers
                 return Ok(false);
             }
 
+
+            req.ImageName = await SaveImage(req.ImageFile);
+
+
             var newProduct = new Product()
             {
                 ProductName = req.ProductName,
                 Quantity = req.Quantity,
                 Price = req.Price,
                 AuthId = user.Id,
+                ImageName = req.ImageName,
+                ImageSrc = String.Format("{0}://{1}{2}/Images/{3}", Request.Scheme, Request.Host, Request.PathBase, req.ImageName),
             };
 
             _context.Products.Add(newProduct);
@@ -131,9 +150,19 @@ namespace authAPI.Controllers
         [HttpGet("products"), Authorize]
         public async Task<ActionResult<List<Product>>> GetProduct()
         {
-            var products = await _context.Products.ToListAsync();
 
-            return Ok(products);
+            return Ok( await _context.Products
+                .Select(x => new
+                {
+                    Id = x.Id,
+                    ProductName = x.ProductName,
+                    Quantity = x.Quantity,
+                    AuthId = x.AuthId,
+                    Price = x.Price,
+                    ImageName = x.ImageName,
+                    ImageSrc = String.Format("{0}://{1}{2}/Images/{3}", Request.Scheme, Request.Host, Request.PathBase, x.ImageName)
+                })
+                .ToListAsync());
         }
 
 
@@ -152,6 +181,8 @@ namespace authAPI.Controllers
                     return Ok(false);
                 }
 
+                DeleteImage(req.ImageName);
+
                 _context.Products.Remove(product);
 
                 await _context.SaveChangesAsync();
@@ -167,6 +198,8 @@ namespace authAPI.Controllers
                 if (user == null) return Ok(false);
 
                 if (product == null) return Ok(false);
+
+                DeleteImage(req.ImageName);
 
                 _context.Products.Remove(product);
 
@@ -226,8 +259,9 @@ namespace authAPI.Controllers
 
                 AuthId = user.Id,
 
-                ProductId = product.Id
+                ProductId = product.Id,
 
+                ImageSrc = req.ImageSrc
             };
 
             product.Quantity = product.Quantity - 1;
@@ -313,11 +347,11 @@ namespace authAPI.Controllers
 
 
         [HttpPatch("update"), Authorize(Roles = "admin, seller")]
-        public async Task<ActionResult<bool>> ProductUpdate([FromBody] Product req)
+        public async Task<ActionResult<bool>> ProductUpdate([FromForm] ProductUpdateDto req)
         {
             var username = _userService.GetMyName();
 
-            if (req.Quantity <= 0 || req.Price <= 0) return Ok(false);
+            if (req.Quantity <= 0 || req.Price <= 0 || req.ImageFile == null) return Ok(false);
 
             if (username == "admin")
             {
@@ -332,15 +366,28 @@ namespace authAPI.Controllers
 
                 if (product == null) return Ok(false);
 
+                if (req.ImageFile != null)
+                {
+                    DeleteImage(req.ImageName);
+                    req.ImageName = await SaveImage(req.ImageFile);
+                }
+
+
                 product.ProductName = req.ProductName;
 
                 product.Quantity = req.Quantity;
 
                 product.Price = req.Price;
 
+                product.ImageName = req.ImageName;
+
+                product.ImageFile = req.ImageFile;
+
+                product.ImageSrc = String.Format("{0}://{1}{2}/Images/{3}", Request.Scheme, Request.Host, Request.PathBase, req.ImageName);
+
                 await _context.SaveChangesAsync();
 
-                return Ok(true);
+                return Ok(product);
 
             } else
             {
@@ -360,11 +407,23 @@ namespace authAPI.Controllers
 
                 if (product == null) return Ok(false);
 
+                if (req.ImageFile != null)
+                {
+                    DeleteImage(req.ImageName);
+                    req.ImageName = await SaveImage(req.ImageFile);
+                }
+
                 product.ProductName = req.ProductName;
 
                 product.Quantity = req.Quantity;
 
                 product.Price = req.Price;
+
+                product.ImageName = req.ImageName;
+
+                product.ImageFile = req.ImageFile;
+
+                product.ImageSrc = String.Format("{0}://{1}{2}/Images/{3}", Request.Scheme, Request.Host, Request.PathBase, req.ImageName);
 
                 await _context.SaveChangesAsync();
 
@@ -408,6 +467,28 @@ namespace authAPI.Controllers
             var jwt = new JwtSecurityTokenHandler().WriteToken(token);
 
             return jwt;
+        }
+
+
+        [NonAction]
+        public async Task<string> SaveImage(IFormFile imageFile)
+        {
+            string imageName = new String(Path.GetFileNameWithoutExtension(imageFile.FileName).Take(10).ToArray()).Replace(' ', '-');
+            imageName = imageName + DateTime.Now.ToString("yymmssfff") + Path.GetExtension(imageFile.FileName);
+            var imagePath = Path.Combine(_env.ContentRootPath, "Images", imageName);
+            using (var fileStream = new FileStream(imagePath, FileMode.Create))
+            {
+                await imageFile.CopyToAsync(fileStream);
+            }
+            return imageName;
+        }
+
+        [NonAction]
+        public void DeleteImage(string imageName)
+        {
+            var imagePath = Path.Combine(_env.ContentRootPath, "Images", imageName);
+            if (System.IO.File.Exists(imagePath))
+                System.IO.File.Delete(imagePath);
         }
 
     }

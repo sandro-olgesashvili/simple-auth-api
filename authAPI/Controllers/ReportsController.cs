@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 using authAPI.Service;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using System.IO;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Hosting;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -18,10 +21,14 @@ namespace authAPI.Controllers
 
         private readonly IUserService _userService;
 
-        public ReportsController(DataContext context, IUserService userService)
+        private readonly IWebHostEnvironment _env;
+
+
+        public ReportsController(DataContext context, IUserService userService, IWebHostEnvironment env)
         {
             _context = context;
             _userService = userService;
+            _env = env;
         }
 
         [HttpGet, Authorize(Roles ="admin")]
@@ -59,7 +66,6 @@ namespace authAPI.Controllers
 
             return Ok(productSales);
         }
- 
     }
 }
 

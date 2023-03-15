@@ -35,6 +35,7 @@ namespace authAPI.Migrations
                     ProductName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Quantity = table.Column<int>(type: "int", nullable: false),
                     Price = table.Column<double>(type: "float", nullable: false),
+                    ImageName = table.Column<string>(type: "nvarchar(100)", nullable: false),
                     AuthId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -57,7 +58,8 @@ namespace authAPI.Migrations
                     Quantity = table.Column<int>(type: "int", nullable: false),
                     Price = table.Column<double>(type: "float", nullable: false),
                     ProductName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AuthId = table.Column<int>(type: "int", nullable: false)
+                    AuthId = table.Column<int>(type: "int", nullable: false),
+                    DateTime = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -104,6 +106,7 @@ namespace authAPI.Migrations
                     ProductName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Quantity = table.Column<int>(type: "int", nullable: false),
                     Price = table.Column<double>(type: "float", nullable: false),
+                    ImageSrc = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ProductId = table.Column<int>(type: "int", nullable: false),
                     AuthId = table.Column<int>(type: "int", nullable: false)
                 },

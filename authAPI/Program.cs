@@ -3,6 +3,7 @@ global using authAPI.Data;
 global using Microsoft.EntityFrameworkCore;
 using authAPI.Service;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
@@ -18,7 +19,7 @@ builder.Services.AddControllers();
 
 
 
-builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("UserApp")));
+builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("UserApp")).EnableSensitiveDataLogging());
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -61,7 +62,6 @@ builder.Services.AddCors(p => p.AddPolicy("corsapp", builder =>
     builder.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
 }));
 
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -72,6 +72,12 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("corsapp");
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(Path.Combine(app.Environment.ContentRootPath, "Images")),
+    RequestPath = "/Images"
+});
 
 app.UseHttpsRedirection();
 

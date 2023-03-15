@@ -13,7 +13,6 @@ namespace authAPI
 
         public string ProductName { get; set; }
 
-        [JsonIgnore]
         public Auth Auth { get; set; }
 
         public int AuthId { get; set; }
