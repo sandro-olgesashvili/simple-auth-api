@@ -18,9 +18,19 @@ namespace authAPI
         [NotMapped]
         public IFormFile ImageFile { get; set; }
 
-
         [NotMapped]
         public string ImageSrc { get; set; }
+
+
+        [Column(TypeName = "nvarchar(100)")]
+        public string PdfName { get; set; }
+
+        [NotMapped]
+        public IFormFile PdfFile { get; set; }
+
+
+        [NotMapped]
+        public string PdfSrc { get; set; }
     }
 }
 

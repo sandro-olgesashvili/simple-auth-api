@@ -72,12 +72,18 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("corsapp");
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(Path.Combine(app.Environment.ContentRootPath, "Pdf")),
+    RequestPath = "/Pdf"
+});
 
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new PhysicalFileProvider(Path.Combine(app.Environment.ContentRootPath, "Images")),
     RequestPath = "/Images"
 });
+
 
 app.UseHttpsRedirection();
 

@@ -14,6 +14,8 @@ namespace authAPI
 
         public string ImageSrc { get; set; }
 
+        public string PdfSrc { get; set; }
+
         public Product Product { get; set; }
 
         public int ProductId { get; set; }

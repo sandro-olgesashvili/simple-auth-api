@@ -62,6 +62,10 @@ namespace authAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("PdfSrc")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<double>("Price")
                         .HasColumnType("float");
 
@@ -96,6 +100,10 @@ namespace authAPI.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("ImageName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("PdfName")
                         .IsRequired()
                         .HasColumnType("nvarchar(100)");
 

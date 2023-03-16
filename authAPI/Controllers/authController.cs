@@ -124,6 +124,9 @@ namespace authAPI.Controllers
 
             req.ImageName = await SaveImage(req.ImageFile);
 
+            req.PdfName = await SavePdf(req.PdfFile);
+
+
 
             var newProduct = new Product()
             {
@@ -131,6 +134,8 @@ namespace authAPI.Controllers
                 Quantity = req.Quantity,
                 Price = req.Price,
                 AuthId = user.Id,
+                PdfName = req.PdfName,
+                PdfSrc = String.Format("{0}://{1}{2}/Pdf/{3}", Request.Scheme, Request.Host, Request.PathBase, req.PdfName),
                 ImageName = req.ImageName,
                 ImageSrc = String.Format("{0}://{1}{2}/Images/{3}", Request.Scheme, Request.Host, Request.PathBase, req.ImageName),
             };
@@ -160,7 +165,9 @@ namespace authAPI.Controllers
                     AuthId = x.AuthId,
                     Price = x.Price,
                     ImageName = x.ImageName,
-                    ImageSrc = String.Format("{0}://{1}{2}/Images/{3}", Request.Scheme, Request.Host, Request.PathBase, x.ImageName)
+                    ImageSrc = String.Format("{0}://{1}{2}/Images/{3}", Request.Scheme, Request.Host, Request.PathBase, x.ImageName),
+                    PdfName = x.PdfName,
+                    PdfSrc = String.Format("{0}://{1}{2}/Pdf/{3}", Request.Scheme, Request.Host, Request.PathBase, x.PdfName)
                 })
                 .ToListAsync());
         }
@@ -183,12 +190,15 @@ namespace authAPI.Controllers
 
                 DeleteImage(req.ImageName);
 
+                DeletePdf(req.PdfName);
+
                 _context.Products.Remove(product);
 
                 await _context.SaveChangesAsync();
 
 
                 return Ok(true);
+
             } else
             {
                 var user = _context.Users.Where(x => x.Username == username).FirstOrDefault();
@@ -201,14 +211,14 @@ namespace authAPI.Controllers
 
                 DeleteImage(req.ImageName);
 
+                DeletePdf(req.PdfName);
+
                 _context.Products.Remove(product);
 
                 await _context.SaveChangesAsync();
 
                 return Ok(true);
             }
-
-
         }
 
 
@@ -261,7 +271,9 @@ namespace authAPI.Controllers
 
                 ProductId = product.Id,
 
-                ImageSrc = req.ImageSrc
+                ImageSrc = req.ImageSrc,
+
+                PdfSrc = req.PdfSrc
             };
 
             product.Quantity = product.Quantity - 1;
@@ -351,7 +363,7 @@ namespace authAPI.Controllers
         {
             var username = _userService.GetMyName();
 
-            if (req.Quantity <= 0 || req.Price <= 0 || req.ImageFile == null) return Ok(false);
+            if (req.Quantity <= 0 || req.Price <= 0) return Ok(false);
 
             if (username == "admin")
             {
@@ -366,12 +378,27 @@ namespace authAPI.Controllers
 
                 if (product == null) return Ok(false);
 
-                if (req.ImageFile != null)
+                if (req.ImageFile != null && req.PdfFile != null)
                 {
                     DeleteImage(req.ImageName);
                     req.ImageName = await SaveImage(req.ImageFile);
+
+                    DeletePdf(req.PdfName);
+                    req.PdfName = await SavePdf(req.PdfFile);
+
                 }
 
+                product.ImageName = req.ImageName;
+
+                product.ImageFile = req.ImageFile;
+
+                product.ImageSrc = String.Format("{0}://{1}{2}/Images/{3}", Request.Scheme, Request.Host, Request.PathBase, req.ImageName);
+
+                product.PdfName = req.PdfName;
+
+                product.PdfFile = req.PdfFile;
+
+                product.PdfSrc = String.Format("{0}://{1}{2}/Pdf/{3}", Request.Scheme, Request.Host, Request.PathBase, req.PdfName);
 
                 product.ProductName = req.ProductName;
 
@@ -379,11 +406,6 @@ namespace authAPI.Controllers
 
                 product.Price = req.Price;
 
-                product.ImageName = req.ImageName;
-
-                product.ImageFile = req.ImageFile;
-
-                product.ImageSrc = String.Format("{0}://{1}{2}/Images/{3}", Request.Scheme, Request.Host, Request.PathBase, req.ImageName);
 
                 await _context.SaveChangesAsync();
 
@@ -407,11 +429,18 @@ namespace authAPI.Controllers
 
                 if (product == null) return Ok(false);
 
-                if (req.ImageFile != null)
+
+
+                if (req.ImageFile != null && req.PdfFile != null)
                 {
                     DeleteImage(req.ImageName);
                     req.ImageName = await SaveImage(req.ImageFile);
+
+                    DeletePdf(req.PdfName);
+                    req.PdfName = await SavePdf(req.PdfFile);
+
                 }
+
 
                 product.ProductName = req.ProductName;
 
@@ -424,6 +453,13 @@ namespace authAPI.Controllers
                 product.ImageFile = req.ImageFile;
 
                 product.ImageSrc = String.Format("{0}://{1}{2}/Images/{3}", Request.Scheme, Request.Host, Request.PathBase, req.ImageName);
+
+                product.PdfName = req.PdfName;
+
+                product.PdfFile = req.PdfFile;
+
+                product.PdfSrc = String.Format("{0}://{1}{2}/Pdf/{3}", Request.Scheme, Request.Host, Request.PathBase, req.PdfName);
+
 
                 await _context.SaveChangesAsync();
 
@@ -483,10 +519,32 @@ namespace authAPI.Controllers
             return imageName;
         }
 
+
+        [NonAction]
+        public async Task<string> SavePdf(IFormFile pdfFile)
+        {
+            string imageName = new String(Path.GetFileNameWithoutExtension(pdfFile.FileName).Take(10).ToArray()).Replace(' ', '-');
+            imageName = imageName + DateTime.Now.ToString("yymmssfff") + Path.GetExtension(pdfFile.FileName);
+            var imagePath = Path.Combine(_env.ContentRootPath, "Pdf", imageName);
+            using (var fileStream = new FileStream(imagePath, FileMode.Create))
+            {
+                await pdfFile.CopyToAsync(fileStream);
+            }
+            return imageName;
+        }
+
         [NonAction]
         public void DeleteImage(string imageName)
         {
             var imagePath = Path.Combine(_env.ContentRootPath, "Images", imageName);
+            if (System.IO.File.Exists(imagePath))
+                System.IO.File.Delete(imagePath);
+        }
+
+        [NonAction]
+        public void DeletePdf(string pdfName)
+        {
+            var imagePath = Path.Combine(_env.ContentRootPath, "Pdf", pdfName);
             if (System.IO.File.Exists(imagePath))
                 System.IO.File.Delete(imagePath);
         }

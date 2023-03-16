@@ -7,6 +7,8 @@ namespace authAPI
 
         public string ImageSrc { get; set; }
 
+        public string PdfSrc { get; set; }
+
     }
 }
 

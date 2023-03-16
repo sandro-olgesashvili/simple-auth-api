@@ -86,7 +86,7 @@ namespace authAPI.Controllers
                     ProductName = item.ProductName,
                     AuthId = user.Id,
                     DateTime = DateTime.Now
-            };
+                };
 
                 _context.SoldProducts.Add(sold);
 

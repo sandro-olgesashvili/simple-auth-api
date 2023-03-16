@@ -24,7 +24,16 @@ namespace authAPI
         [NotMapped]
         public string ImageSrc { get; set; }
 
-		[JsonIgnore]
+        [Column(TypeName = "nvarchar(100)")]
+        public string PdfName { get; set; }
+
+        [NotMapped]
+        public IFormFile PdfFile { get; set; }
+
+        [NotMapped]
+        public string PdfSrc { get; set; }
+
+        [JsonIgnore]
         public Auth Auth { get; set; }
 
 		public int AuthId { get; set; }
